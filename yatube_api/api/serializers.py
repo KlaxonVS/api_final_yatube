@@ -1,7 +1,6 @@
 import base64
 from django.core.files.base import ContentFile
-from rest_framework import serializers, status
-from rest_framework.response import Response
+from rest_framework import serializers
 
 
 from posts.models import Post, Group, Comment, Follow, User

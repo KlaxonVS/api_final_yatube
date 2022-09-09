@@ -10,7 +10,7 @@ from .serializers import (PostSerializer,
                           CommentSerializer,
                           GroupSerializer,
                           FollowSerializer)
-from posts.models import Post, Comment, Group, Follow, User
+from posts.models import Post, Comment, Group, Follow
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -31,7 +31,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         return get_object_or_404(Post, pk=self.kwargs.get('post_id'))
 
     def get_queryset(self):
-        return Comment.objects.select_related('post').filter(post=self.get_post())
+        return Comment.objects.select_related('post').filter(
+            post=self.get_post()
+        )
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, post=self.get_post())
