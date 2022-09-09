@@ -33,6 +33,9 @@ class Post(models.Model):
         related_name='posts', blank=True, null=True
     )
 
+    class Meta:
+        ordering = ['pk']
+
     def __str__(self):
         return self.text[0:14]
 
@@ -66,6 +69,16 @@ class Follow(models.Model):
     class Meta:
         verbose_name = 'Подписку'
         verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                name='%(app_label)s_%(class)s_only_uniq_follows',
+                fields=['user', 'following'],
+            ),
+            models.CheckConstraint(
+                name='%(app_label)s_%(class)s_prevent_self_follow',
+                check=(~models.Q(user=models.F('following'))),
+            ),
+        ]
 
     def __str__(self):
         return f'{self.user} подписан на {self.author}'

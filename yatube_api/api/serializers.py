@@ -1,19 +1,8 @@
-import base64
-from django.core.files.base import ContentFile
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 
 from posts.models import Post, Group, Comment, Follow, User
-
-
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
-        return super().to_internal_value(data)
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -69,9 +58,10 @@ class FollowSerializer(serializers.ModelSerializer):
             )
         ]
 
-    def validate(self, data):
-        if self.context['request'].user == data['following']:
+    def validate_following(self, value):
+        print(value)
+        if self.context['request'].user == value:
             raise serializers.ValidationError(
                 'Нельзя подписаться на себя'
             )
-        return data
+        return value

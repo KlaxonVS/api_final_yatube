@@ -40,7 +40,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class FollowViewSet(mixins.CreateModelMixin,
-                    mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
                     viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated, ]
@@ -49,7 +48,7 @@ class FollowViewSet(mixins.CreateModelMixin,
     search_fields = ('following__username',)
 
     def get_queryset(self):
-        return Follow.objects.select_related('following').filter(
+        return Follow.objects.select_related('user').filter(
             user=self.request.user
         )
 
@@ -60,4 +59,3 @@ class FollowViewSet(mixins.CreateModelMixin,
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
